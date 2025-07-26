@@ -1,0 +1,13 @@
+scene {
+    entity Player {
+        Transform(position: [0, 0, 5], rotation: [0, 0, 0], scale: [1, 1, 1]);
+        Camera();
+        Script(src: "Player");
+      } 
+    use TutelCharacter {
+        Transform(position: [5, 0, 1]);
+    }
+    use TutelCharacter {
+        Transform(position: [4, 0, 1]);
+    }
+}

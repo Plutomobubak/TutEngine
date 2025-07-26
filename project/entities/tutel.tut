@@ -1,0 +1,5 @@
+entity TutelCharacter {
+    Transform(position: [0, 0, 0], rotation: [0, 0, 0], scale: [1, 1, 1]);
+    Mesh(src:"assets/meshy_char_rigged.fbx");
+    Script(src:"testScript");
+}

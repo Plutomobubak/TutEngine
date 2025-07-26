@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/arch/Projects/C++/graphics/cmake_install.cmake",
+		"/home/arch/Projects/C++/graphics/external/glfw/cmake_install.cmake",
+		"/home/arch/Projects/C++/graphics/external/glfw/src/cmake_install.cmake",
+		"/home/arch/Projects/C++/graphics/external/glfw/docs/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

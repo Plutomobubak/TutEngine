@@ -1,0 +1,79 @@
+#include "animationSys.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+
+// Helper to convert aiMatrix4x4 to glm::mat4 (same as before)
+glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from) {
+    glm::mat4 to;
+    to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
+    to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
+    to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
+    to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
+    return to;
+}
+
+void AnimationSystem::calculateNodeTransforms(
+    const aiNode* node,
+    const glm::mat4& parentTransform,
+    double animationTime,
+    const Animation& animation,
+    std::map<std::string, glm::mat4>& finalTransforms)
+{
+    glm::mat4 nodeTransform = aiMatrix4x4ToGlm(node->mTransformation);
+
+    auto it = animation.nodeAnimMap.find(node->mName.C_Str());
+    if (it != animation.nodeAnimMap.end()) {
+        aiNodeAnim* channel = it->second;
+
+        glm::vec3 pos = animation.interpolatePosition(animationTime, channel);
+        glm::quat rot = animation.interpolateRotation(animationTime, channel);
+        glm::vec3 scale = animation.interpolateScaling(animationTime, channel);
+
+        glm::mat4 translation = glm::translate(glm::mat4(1.0f), pos);
+        glm::mat4 rotation = glm::toMat4(rot);
+        glm::mat4 scaling = glm::scale(glm::mat4(1.0f), scale);
+
+        nodeTransform = translation * rotation * scaling;
+    }
+
+    glm::mat4 globalTransform = parentTransform * nodeTransform;
+    finalTransforms[node->mName.C_Str()] = globalTransform;
+
+    for (unsigned int i = 0; i < node->mNumChildren; i++) {
+        calculateNodeTransforms(node->mChildren[i], globalTransform, animationTime, animation, finalTransforms);
+    }
+}
+
+void AnimationSystem::update(std::vector<AnimationComponent*>& components, double deltaTime, const aiNode* rootNode) {
+    for (AnimationComponent* animComp : components) {
+        if (!animComp->playing || !animComp->animation)
+            continue;
+
+        // Update animation time with speed and looping
+        animComp->currentTime += deltaTime * animComp->animation->ticksPerSecond * animComp->speed;
+        if (animComp->loop) {
+            animComp->currentTime = fmod(animComp->currentTime, animComp->animation->duration);
+        } else {
+            if (animComp->currentTime > animComp->animation->duration)
+                animComp->currentTime = animComp->animation->duration;
+        }
+
+        std::map<std::string, glm::mat4> boneTransforms;
+        calculateNodeTransforms(rootNode, glm::mat4(1.0f), animComp->currentTime, *animComp->animation, boneTransforms);
+
+        // Resize finalBoneMatrices to hold one transform per bone
+        animComp->finalBoneMatrices.resize(animComp->boneOffsets.size());
+
+        // For each bone name and its index
+        for (const auto& [boneName, boneIndex] : animComp->boneMapping) {
+            auto it = boneTransforms.find(boneName);  // find the bone transform for this bone name
+            if (it != boneTransforms.end()) {
+                // Multiply global transform by the bone's inverse bind pose (offset)
+                animComp->finalBoneMatrices[boneIndex] = it->second * animComp->boneOffsets[boneIndex];
+            } else {
+                // If no transform found, use identity matrix as fallback
+                animComp->finalBoneMatrices[boneIndex] = glm::mat4(1.0f);
+            }
+        }
+    }
+}
