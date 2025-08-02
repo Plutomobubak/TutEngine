@@ -21,7 +21,12 @@ public:
     void Update(float deltaT) override {
         auto& reg = Registry::instance();
         Move(reg, deltaT);
-        LookAround(reg, deltaT);
+        if (InputManager::IsMousePressed(0)) {
+            InputManager::LockMouse(true);
+        } else if (InputManager::IsKeyDown(GLFW_KEY_ESCAPE)) {
+            InputManager::LockMouse(false);
+        }
+        if (InputManager::IsMouseLocked()) LookAround(reg, deltaT);
     }
 
     void LookAround(Registry& reg, float deltaT) {
@@ -56,11 +61,6 @@ public:
         if (rotation.y > glm::two_pi<float>()) rotation.y -= glm::two_pi<float>();
         else if (rotation.y < 0) rotation.y += glm::two_pi<float>();
 
-        if (InputManager::IsMousePressed(0)) {
-            InputManager::LockMouse(true);
-        } else if (InputManager::IsKeyDown(GLFW_KEY_ESCAPE)) {
-            InputManager::LockMouse(false);
-        }
     }
 
     void Move(Registry& reg, float deltaT) {

@@ -14,6 +14,10 @@ struct Transform : public Component {
               const glm::vec3& scl = glm::vec3(1))
         : position(pos), rotation(rot), scale(scl) {}
 
+    void init() override;
+    void update(float dt) override;
+    void applyProperties(const Properties& props) override;
+
     glm::mat4 getLocalMatrix() const {
         glm::mat4 mat = glm::translate(glm::mat4(1.0f), position);
         mat = glm::rotate(mat, rotation.y, glm::vec3(0, 1, 0));  // yaw
@@ -22,16 +26,7 @@ struct Transform : public Component {
         mat = glm::scale(mat, scale);
         return mat;
     }
-    void applyProperties(const Properties& props) {
-        for (const auto& [key, val] : props) {
-            if (key == "position" && std::holds_alternative<glm::vec3>(val))
-                position = std::get<glm::vec3>(val);
-            else if (key == "rotation" && std::holds_alternative<glm::vec3>(val))
-                rotation = std::get<glm::vec3>(val);
-            else if (key == "scale" && std::holds_alternative<glm::vec3>(val))
-                scale = std::get<glm::vec3>(val);
-        }
-    }
+    ~Transform() override;
 };
 
 struct GlobalTransform : public Component {
@@ -41,8 +36,14 @@ struct GlobalTransform : public Component {
     explicit GlobalTransform(const glm::mat4& mat) : matrix(mat) {}
 };
 
-struct Parent {
+struct Parent : public Component {
     Entity parent;
+
+    void init() override;
+    void update(float dt) override;
+    void applyProperties(const Properties& props) override;
+
+    ~Parent() override;
 };
 
 struct Camera : public Component {
@@ -54,16 +55,9 @@ struct Camera : public Component {
     glm::mat4 getProjection() const {
         return glm::perspective(glm::radians(fov), aspect, nearPlane, farPlane);
     }
+    void init() override;
+    void update(float dt) override;
+    void applyProperties(const Properties& props) override;
 
-
-    void applyProperties(const Properties& props) {
-        for (const auto& [key, val] : props) {
-            // if (key == "position" && std::holds_alternative<glm::vec3>(val))
-            //     position = std::get<glm::vec3>(val);
-            // else if (key == "rotation" && std::holds_alternative<glm::vec3>(val))
-            //     rotation = std::get<glm::vec3>(val);
-            // else if (key == "scale" && std::holds_alternative<glm::vec3>(val))
-            //     scale = std::get<glm::vec3>(val);
-        }
-    }
+    ~Camera() override;
 };

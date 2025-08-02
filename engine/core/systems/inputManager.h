@@ -27,6 +27,7 @@ public:
     static bool IsMouseReleased(int button);
     static void GetMousePosition(double& x, double& y);
     static void LockMouse(bool lock);
+    static bool IsMouseLocked();
 
 private:
     static inline GLFWwindow* window = nullptr; 
@@ -37,4 +38,5 @@ private:
     static std::unordered_map<int, KeyState> keyStates;
     static std::unordered_map<int, KeyState> mouseButtonStates;
     static double mouseX, mouseY;
+    static bool mouseLocked;
 };

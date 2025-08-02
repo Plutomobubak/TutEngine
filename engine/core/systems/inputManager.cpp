@@ -4,6 +4,7 @@ std::unordered_map<int, KeyState> InputManager::keyStates;
 std::unordered_map<int, KeyState> InputManager::mouseButtonStates;
 double InputManager::mouseX = 0.0;
 double InputManager::mouseY = 0.0;
+bool InputManager::mouseLocked = false;
 
 void InputManager::Init(GLFWwindow* window) {
     glfwSetKeyCallback(window, KeyCallback);
@@ -89,4 +90,9 @@ void InputManager::CursorPosCallback(GLFWwindow* window, double xpos, double ypo
 
 void InputManager::LockMouse(bool lock){
     lock? glfwSetInputMode(InputManager::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED): glfwSetInputMode(InputManager::window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    mouseLocked = lock;
+}
+
+bool InputManager::IsMouseLocked(){
+  return mouseLocked;
 }

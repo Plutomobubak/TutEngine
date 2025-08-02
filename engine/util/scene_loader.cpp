@@ -46,6 +46,7 @@ void printScene(const Scene& scene) {
 
 void registerComponents() {
     REGISTER_COMPONENT_HANDLER(Transform);
+    REGISTER_COMPONENT_HANDLER(Parent);
     REGISTER_COMPONENT_HANDLER(Camera);
     REGISTER_COMPONENT_HANDLER(Mesh);
 componentHandlers["Script"] = [](unsigned int e, const Properties& props) {
