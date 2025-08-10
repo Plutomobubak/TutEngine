@@ -68,12 +68,23 @@ public:
         if (storage.empty()) {
             registeredTypes.push_back(typeid(T));
         }
+        component.entity = e;
         storage[e] = new T(std::move(component));
     }
 
     template<typename T>
     T& get(Entity e) {
         return *reinterpret_cast<T*>(components[typeid(T)][e]);
+    }
+
+    template<typename T>
+    T* try_get(unsigned int entity) {
+        auto& storage = components[typeid(T)];
+        auto it = storage.find(entity);
+        if (it != storage.end()) {
+            return static_cast<T*>(it->second);
+        }
+        return nullptr;
     }
     template<typename T>
     bool has(Entity e) const {
@@ -106,21 +117,25 @@ public:
             }
         }
     }
-    template<typename T, typename... Args>
-    T& emplace_or_replace(Entity e, Args&&... args) {
-        auto& storage = components[typeid(T)];
-        if (storage.empty()) {
-            registeredTypes.push_back(typeid(T));
-        }
-        if (storage.find(e) != storage.end()) {
-            // Replace existing component
-            delete static_cast<T*>(storage[e]);
-            storage[e] = new T(std::forward<Args>(args)...);
-        } else {
-            storage[e] = new T(std::forward<Args>(args)...);
-        }
-        return *static_cast<T*>(storage[e]);
+template<typename T, typename... Args>
+T& emplace_or_replace(Entity e, Args&&... args) {
+    auto& storage = components[typeid(T)];
+    if (storage.empty()) {
+        registeredTypes.push_back(typeid(T));
     }
+    if (storage.find(e) != storage.end()) {
+        // Replace existing component
+        delete static_cast<T*>(storage[e]);
+        storage[e] = new T(std::forward<Args>(args)...);
+    } else {
+        storage[e] = new T(std::forward<Args>(args)...);
+    }
+    
+    T* comp = static_cast<T*>(storage[e]);
+    comp->entity = e;  // Set entity member here
+    
+    return *comp;
+}
 
     void updateAllComponents(float dt) {
         for (auto& type : registeredTypes) {

@@ -84,8 +84,12 @@ PComponent Parser::parseComponent() {
                 } else if (curToken.type == TokenType::String) {
                     val = curToken.text;
                     next();
+                } else if (curToken.type == TokenType::Bool){
+                    val = curToken.text == "true"? true:false;
+                    next();
+                
                 } else {
-                    std::cerr << "Unexpected value type in component property: " << curToken.text << "\n";
+                    std::cerr << "Unexpected value type in component property: " << (curToken.type == TokenType::Identifier? "kw":"other") << " : " << curToken.text << "\n";
                     exit(1);
                 }
 

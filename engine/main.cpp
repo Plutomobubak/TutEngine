@@ -14,7 +14,6 @@
 #include "core/systems/transformSys.h"
 #include "core/systems/inputManager.h"
 
-#include "renderer/renderer.h"
 #include "renderer/shader.h"
 
 #include "game/player.h"
@@ -95,6 +94,7 @@ FramebufferSizeCallback(window, fbWidth, fbHeight);
     shader.setFloat("ambientStrength", ambientStrength);
     shader.setFloat("specularStrength", specularStrength);
     shader.setFloat("shininess", shininess);
+
     // Setup ECS
     //
     ScriptCompiler::compileAllScripts("project/scripts","bin/scripts");
@@ -105,13 +105,13 @@ FramebufferSizeCallback(window, fbWidth, fbHeight);
 
     reg.debugPrintComponents();
 
+
+    // Init systems
     RenderSys render(shader.getID());
     
-
-    //reg.add<Parent>(Player::getEntity(),Parent{Tutel::getEntity()});
-
-
     InputManager::Init(window);
+
+    // Start Main loop
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
  
@@ -122,10 +122,6 @@ FramebufferSizeCallback(window, fbWidth, fbHeight);
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        //Process input
-        // Player::Update(deltaTime);
-        // Tutel::Update(deltaTime);
-        reg.updateAllComponents(deltaTime);
 
 
         // Update shader stuff
@@ -145,6 +141,9 @@ FramebufferSizeCallback(window, fbWidth, fbHeight);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+        //Process input
+        reg.updateAllComponents(deltaTime);
+        
       int windowWidth, windowHeight;
       glfwGetWindowSize(window, &windowWidth, &windowHeight);
 

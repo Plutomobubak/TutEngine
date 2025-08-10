@@ -13,7 +13,7 @@ public:
 
     RenderSys(GLuint shaderProgram) : shader(shaderProgram) {}
 
-    void render() {
+    void render() {                                                             //
       // Get Camera from registry
         glm::mat4 view, proj;
         auto& registry = Registry::instance();

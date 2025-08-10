@@ -38,7 +38,11 @@ void Shader::setVec3(const std::string& name, const glm::vec3& value) const {
 }
 
 void Shader::setMat4(const std::string& name, const glm::mat4& mat) const {
-    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    GLint loc = glGetUniformLocation(ID, name.c_str());
+    if (loc == -1) {
+        std::cerr << "Warning: uniform '" << name << "' not found or not used in shader!\n";
+    }
+    glUniformMatrix4fv(loc, 1, GL_FALSE, &mat[0][0]);
 }
 
 // Private helpers

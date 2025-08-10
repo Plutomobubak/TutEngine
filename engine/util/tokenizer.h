@@ -10,6 +10,7 @@ enum class TokenType {
     Identifier,
     Number,
     String,
+    Bool,
     Symbol,
     EndOfFile,
 };
@@ -88,6 +89,7 @@ public:
         if (std::isalpha(c) || c == '_') {
             std::string id;
             while (std::isalnum(peek()) || peek() == '_') id += get();
+            if (id == "true" || id == "false") return {TokenType::Bool, id};
             if (isKeyword(id))
                 return {TokenType::Keyword, id};
             else

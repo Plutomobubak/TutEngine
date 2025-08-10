@@ -3,6 +3,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/euler_angles.hpp>
 #include "./components/transform.h"
+#include "./components/collider.h"
 #include "./components/mesh.h"
 #include "./components/script.h"
 #include "./registry.h"
