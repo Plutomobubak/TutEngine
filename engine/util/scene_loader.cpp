@@ -50,6 +50,7 @@ void registerComponents() {
     REGISTER_COMPONENT_HANDLER(Collider);
     REGISTER_COMPONENT_HANDLER(Camera);
     REGISTER_COMPONENT_HANDLER(Mesh);
+    REGISTER_COMPONENT_HANDLER(Primitive);
 componentHandlers["Script"] = [](unsigned int e, const Properties& props) {
     auto& comp = Registry::instance().emplace_or_replace<Script>(e);
     comp.setEntity(e);            // set entity ID here

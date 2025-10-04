@@ -2,6 +2,7 @@
 
 #include "../registry.h"
 #include "../components/mesh.h"
+#include "../components/primitive.h"
 #include "../../renderer/model.h"
 #include "../components/transform.h"
 #include <glm/glm.hpp>
@@ -36,6 +37,16 @@ public:
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, &proj[0][0]);
 
         registry.view<GlobalTransform, Mesh>([&](Entity, GlobalTransform& tf, Mesh& mc) {
+            glm::mat4 model = tf.matrix;
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
+
+            if (mc.model) {
+                mc.model->draw();
+            } else {
+                std::cerr << "Mesh model is null. Skipping draw.\n";
+            }
+        });
+        registry.view<GlobalTransform, Primitive>([&](Entity, GlobalTransform& tf, Primitive& mc) {
             glm::mat4 model = tf.matrix;
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
 

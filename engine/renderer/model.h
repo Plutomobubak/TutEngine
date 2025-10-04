@@ -17,14 +17,23 @@ struct Vertex {
 class Model {
   public:
     Model() = default;
+    Model(const std::vector<Vertex>& vertices,
+          const std::vector<unsigned int>& indices)
+        : vertices(vertices), indices(indices) {
+        setupMesh();
+    }
     ~Model();
 
     // Load model from file and return pointer to new Model
     static Model* loadModel(const std::string& path);
+    static Model* createCube(float size = 1.0f);
+    static Model* createPlane(float size = 1.0f);
+    static Model* createSphere(float radius = 1.0f, unsigned int sectors = 16, unsigned int stacks = 16);
+    static Model* createCapsule(float radius = 0.5f, float height = 2.0f, unsigned int segments = 16);
 
     // Draw the mesh (geometry + textures)
     void draw();
-
+    void setTexture(const std::string& path);
     // Accessors for animation data
     const aiScene* getScene() const { return scene; }
     const std::map<std::string, unsigned int>& getBoneMapping() const { return boneMapping; }

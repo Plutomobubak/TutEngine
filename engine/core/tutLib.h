@@ -5,6 +5,7 @@
 #include "./components/transform.h"
 #include "./components/collider.h"
 #include "./components/mesh.h"
+#include "./components/primitive.h"
 #include "./components/script.h"
 #include "./registry.h"
 #include "./systems/inputManager.h"

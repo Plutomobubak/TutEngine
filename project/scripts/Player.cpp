@@ -10,16 +10,20 @@ private:
     bool firstMouse = true;
 
     Entity player;
+    Entity cam;
 
 public:
     void Init() override {
         std::cout << "Init Player" << "\n";
+        auto& reg = Registry::instance();
         player = GetEntity();
         std::cout << "Player script initialized for entity " << GetEntity() << "\n";
     }
 
     void Update(float deltaT) override {
         auto& reg = Registry::instance();
+        if (!cam)
+          cam = reg.find("Cam");
         Move(reg, deltaT);
         if (InputManager::IsMousePressed(0)) {
             InputManager::LockMouse(true);
@@ -48,18 +52,19 @@ public:
         xoffset *= sensitivity;
         yoffset *= sensitivity;
 
-        glm::vec3& rotation = reg.get<Transform>(player).rotation;
+        glm::vec3& protation = reg.get<Transform>(player).rotation;
+        glm::vec3& crotation = reg.get<Transform>(cam).rotation;
 
-        rotation.y += (float)xoffset;
-        rotation.x += (float)yoffset;
+        protation.y += (float)xoffset;
+        crotation.x += (float)yoffset;
 
         // Clamp pitch to avoid flipping
-        if (rotation.x > glm::radians(89.0f)) rotation.x = glm::radians(89.0f);
-        if (rotation.x < glm::radians(-89.0f)) rotation.x = glm::radians(-89.0f);
+        if (crotation.x > glm::radians(89.0f)) crotation.x = glm::radians(89.0f);
+        if (crotation.x < glm::radians(-89.0f)) crotation.x = glm::radians(-89.0f);
 
         // Wrap yaw angle
-        if (rotation.y > glm::two_pi<float>()) rotation.y -= glm::two_pi<float>();
-        else if (rotation.y < 0) rotation.y += glm::two_pi<float>();
+        if (protation.y > glm::two_pi<float>()) protation.y -= glm::two_pi<float>();
+        else if (protation.y < 0) protation.y += glm::two_pi<float>();
 
     }
 

@@ -1,7 +1,7 @@
 scene {
     entity Player {
         Transform(position: [0, 0, 0], rotation: [0, 0, 0], scale: [1, 1, 1]);
-        Collider(type:"box",size: [1,1,1],debug:true);
+        Collider(type:"box",size: [1,2,1],debug:true);
         Script(src: "Player");
       } 
     use TutelCharacter {
@@ -15,5 +15,10 @@ scene {
         Transform(position: [0, 2, 2], rotation: [-0.5,0,0]);
         Camera();
         Parent(parent:"Player");
+    }
+    entity Ground {
+        Transform();
+        Primitive(type: "Plane", texture:"assets/textures/gravel_road_diff_4k.png");
+        Collider(type:"box",size: [2,0.1,2],debug:true);
     }
 }
