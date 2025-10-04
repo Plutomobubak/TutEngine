@@ -10,14 +10,12 @@
 #include "util/ScriptCompiler.hpp"
 #include "util/scene_loader.h"
 #include "core/systems/renderSys.h"
+#include "core/systems/collisionSys.h"
 #include "core/components/transform.h"
 #include "core/systems/transformSys.h"
 #include "core/systems/inputManager.h"
 
 #include "renderer/shader.h"
-
-#include "game/player.h"
-#include "game/tutel.h"
 
 #include "core/misc/debug.h"
 
@@ -108,6 +106,7 @@ FramebufferSizeCallback(window, fbWidth, fbHeight);
 
     // Init systems
     RenderSys render(shader.getID());
+    CollisionSys colsys;
     
     InputManager::Init(window);
 
@@ -143,7 +142,7 @@ FramebufferSizeCallback(window, fbWidth, fbHeight);
 
         //Process input
         reg.updateAllComponents(deltaTime);
-        
+
       int windowWidth, windowHeight;
       glfwGetWindowSize(window, &windowWidth, &windowHeight);
 
@@ -158,6 +157,7 @@ FramebufferSizeCallback(window, fbWidth, fbHeight);
       fbHeight > 0 ? ((float)fbHeight / windowHeight) : 1.f);
 
       debug.update();
+      colsys.checkCollisions();
       // Update states and render
       GlobalTransformSystem::update();
       InputManager::Update();

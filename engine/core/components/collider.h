@@ -4,6 +4,10 @@
 #include "../component.h"
 #include <glm/glm.hpp>
 
+struct AABB {
+    glm::vec3 min;
+    glm::vec3 max;
+};
 struct Collider : public Component {
     enum ColliderType {
       Box,
@@ -16,6 +20,7 @@ struct Collider : public Component {
 
     void applyProperties(const Properties& props) override ;
     
+  AABB getAABB(const glm::mat4& transform) const;
     void init() override ;
     void update(float dt) override ;
     ~Collider() override ;

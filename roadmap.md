@@ -32,7 +32,10 @@
 
     Target: Playable 3rd-person character in simple level
 
-     Third-person camera + player controller
+    ✅ Third-person camera + player controller
+
+    ✅ Collision system
+        - AABB, groups
 
      Level loading from models (e.g., glTF maps)
 

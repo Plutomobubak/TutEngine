@@ -4,6 +4,11 @@ scene {
         Collider(type:"box",size: [1,2,1],debug:true);
         Script(src: "Player");
       } 
+      entity PlayerGroundcheck{
+        Transform(position:[0,-0.7,0]);
+        Parent(parent:"Player");
+        Collider(type:"box",size: [1,0.3,1],debug:true);
+      }
     use TutelCharacter {
         Transform(position: [1, 0, -2]);
     }
