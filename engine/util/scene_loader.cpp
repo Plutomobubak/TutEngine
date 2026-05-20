@@ -81,9 +81,23 @@ void loadScene() {
     Scene scene = parser.parseScene();
     printScene(scene);
     registerComponents();
+// 1. Create a container to hold scripts for a second pass
+    struct DeferredScript {
+        unsigned int entity;
+        const Properties& properties;
+    };
+    std::vector<DeferredScript> deferredScripts;
+
+    // FIRST PASS: Create all entities and non-script components
     for (const auto& entity : scene.entities) {
         unsigned int e = Registry::instance().create(entity.name);
         for (const auto& comp : entity.components) {
+            // If it's a script, skip it for now and save it for later
+            if (comp.name == "Script") {
+                deferredScripts.push_back({e, comp.properties});
+                continue;
+            }
+
             auto it = componentHandlers.find(comp.name);
             if (it != componentHandlers.end()) {
                 it->second(e, comp.properties);
@@ -91,5 +105,15 @@ void loadScene() {
                 std::cerr << "Unknown component: " << comp.name << std::endl;
             }
         }
+    }
+
+    // SECOND PASS: Process all the scripts now that the world is completely built
+    auto scriptIt = componentHandlers.find("Script");
+    if (scriptIt != componentHandlers.end()) {
+        for (const auto& script : deferredScripts) {
+            scriptIt->second(script.entity, script.properties);
+        }
+    } else {
+        std::cerr << "Error: 'Script' component handler is not registered." << std::endl;
     }
 }

@@ -77,15 +77,17 @@ public:
         return *reinterpret_cast<T*>(components[typeid(T)][e]);
     }
 
-    template<typename T>
-    T* try_get(unsigned int entity) {
-        auto& storage = components[typeid(T)];
-        auto it = storage.find(entity);
-        if (it != storage.end()) {
-            return static_cast<T*>(it->second);
-        }
-        return nullptr;
-    }
+template<typename T>
+T* try_get(Entity e) {
+    auto typeIt = components.find(typeid(T));
+    if (typeIt == components.end()) return nullptr;
+
+    auto& storage = typeIt->second;
+    auto it = storage.find(e);
+    if (it == storage.end()) return nullptr;
+
+    return static_cast<T*>(it->second);
+}
     template<typename T>
     bool has(Entity e) const {
         auto it = components.find(typeid(T));

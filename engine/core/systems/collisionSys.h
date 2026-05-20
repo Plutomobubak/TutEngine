@@ -5,34 +5,33 @@
 #include "../components/collider.h"
 
 
-
-AABB Collider::getAABB(const glm::mat4& transform) const {
-    glm::vec3 center = glm::vec3(transform[3]); // translation
-    glm::vec3 halfSize = size * 0.5f;
-    return { center - halfSize, center + halfSize };
-}
-
 class CollisionSys{
   public:
 void checkCollisions() {
     auto& registry = Registry::instance();
 
-    // Collect all colliders
+    // Collect all colliders AND reset their flags
     std::vector<std::pair<Entity, Collider*>> colliders;
     registry.view<Collider, GlobalTransform>([&](Entity e, Collider& c, GlobalTransform& gt){
+        c.colliding = false; // <-- Reset the flag here
         colliders.push_back({e, &c});
     });
 
     // Brute-force pairwise check
     for (size_t i = 0; i < colliders.size(); ++i) {
+        Collider* a = colliders[i].second;
         for (size_t j = i + 1; j < colliders.size(); ++j) {
-            Collider* a = colliders[i].second;
             Collider* b = colliders[j].second;
 
             glm::mat4 tfA = registry.get<GlobalTransform>(colliders[i].first).matrix;
             glm::mat4 tfB = registry.get<GlobalTransform>(colliders[j].first).matrix;
 
+            if (!((a->mask & b->group) && (b->mask & a->group))) {
+                continue; // skip if they don't collide by group/mask rules
+            }
             if (checkAABBCollision(a->getAABB(tfA), b->getAABB(tfB))) {
+                a->colliding = true;
+                b->colliding = true;
                 std::cout << "Collision detected between "
                           << colliders[i].first << " and " << colliders[j].first << "\n";
             }

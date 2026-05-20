@@ -16,7 +16,13 @@ struct Collider : public Component {
     };
     ColliderType type = Box;
     glm::vec3 size = glm::vec3(1.0f);
+
+
+    uint32_t group = 1;      // what group this collider belongs to
+    uint32_t mask = 0xFFFFFFFF; // which groups it can collide with
+
     bool debug = false;
+    bool colliding = false;
 
     void applyProperties(const Properties& props) override ;
     

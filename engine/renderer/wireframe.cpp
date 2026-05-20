@@ -79,5 +79,5 @@ void drawWireframe(const glm::mat4& worldTransform, const glm::vec3& size) {
     glDrawElements(GL_LINES, wireIndexCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
-    std::cout << "Draw Wireframe at " << worldTransform[3][0] << ", " << worldTransform[3][1] << ", " << worldTransform[3][2] << std::endl;
+    // std::cout << "Draw Wireframe at " << worldTransform[3][0] << ", " << worldTransform[3][1] << ", " << worldTransform[3][2] << std::endl;
 }

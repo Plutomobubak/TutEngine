@@ -1,14 +1,14 @@
 scene {
     entity Player {
-        Transform(position: [0, 0, 0], rotation: [0, 0, 0], scale: [1, 1, 1]);
-        Collider(type:"box",size: [1,2,1],debug:true);
+        Transform(position: [0, 1, 0], rotation: [0, 0, 0], scale: [1, 1, 1]);
+        Collider(type:"box",size: [1,2,1],debug:true,group:2,mask:5);
         Script(src: "Player");
       } 
-      entity PlayerGroundcheck{
-        Transform(position:[0,-0.7,0]);
-        Parent(parent:"Player");
-        Collider(type:"box",size: [1,0.3,1],debug:true);
-      }
+    entity PlayerGroundcheck{
+      Transform(position:[0,-0.8,0]);
+      Parent(parent:"Player");
+      Collider(type:"box",size: [1,0.4,1],debug:true,group:16,mask:1);
+    }
     use TutelCharacter {
         Transform(position: [1, 0, -2]);
     }
@@ -24,6 +24,6 @@ scene {
     entity Ground {
         Transform();
         Primitive(type: "Plane", texture:"assets/textures/gravel_road_diff_4k.png");
-        Collider(type:"box",size: [2,0.1,2],debug:true);
+        Collider(type:"box",size: [2,0.1,2],debug:true,group:1);
     }
 }

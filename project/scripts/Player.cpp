@@ -11,12 +11,19 @@ private:
 
     Entity player;
     Entity cam;
+    Collider* bodyCol = nullptr;       // main player collider
+    Collider* groundCol = nullptr;
 
 public:
     void Init() override {
         std::cout << "Init Player" << "\n";
         auto& reg = Registry::instance();
         player = GetEntity();
+        bodyCol = reg.try_get<Collider>(player);
+
+        // Get ground-check collider
+        Entity gc = reg.find("PlayerGroundcheck");
+        groundCol = reg.try_get<Collider>(gc);
         std::cout << "Player script initialized for entity " << GetEntity() << "\n";
     }
 
@@ -31,6 +38,25 @@ public:
             InputManager::LockMouse(false);
         }
         if (InputManager::IsMouseLocked()) LookAround(reg, deltaT);
+        if (!bodyCol || !groundCol)
+          return;
+        // If ground-check collider is colliding
+        if (groundCol->colliding) {
+            auto* tr = reg.try_get<Transform>(player);
+            if (!tr) return;
+
+            // Snap player on top of ground
+            // Assume ground y position is 0 + half-height of player
+            float groundHeight = 0.0f; // you can calculate from AABB
+            float playerHalfHeight = bodyCol->size.y * 0.5f;
+
+            tr->position.y = std::max(groundHeight + playerHalfHeight,tr->position.y);
+        }
+        else if(!InputManager::IsKeyDown(GLFW_KEY_SPACE)) {
+            // Falling logic if not grounded
+            auto* tr = reg.try_get<Transform>(player);
+            if (tr)    tr->position.y -= 0.981f * deltaT; // simple gravity
+        }
     }
 
     void LookAround(Registry& reg, float deltaT) {
